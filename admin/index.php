@@ -46,7 +46,7 @@
 
        
 
-      </div> <!-- end login -->
+      </div> 
 
     </div>
     <div class="bottom">  <h3><a href="../index.php">OCEAN PALACE HOMEPAGE</a></h3></div>
