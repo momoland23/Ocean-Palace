@@ -426,7 +426,85 @@ include('db.php');
 	</div>
 	 <!--// rooms & rates -->
   
+<!-- Reviews Form -->
+<section class="review-w3ls" id="reviews">
+	<div class="reviews" id="reviews">
+		<div class="w3l-visitors-agile">
+			<div class="container">
+				<h3 class="title-w3-agileits title-black-wthree">Submit Your Review</h3>
+				<div class="text-center">
+					<form method="post" action="submit_review.php">
+						<label for="username">Username:</label>
+						<input type="text" name="username" required>
 
+						<label for="rating">Rating:</label>
+						<input type="number" name="rating" min="1" max="5" required>
+
+						<label for="comment">Comment:</label>
+						<input type="text" name="comment" required>
+
+						<button type="submit">Submit Review</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>		
+	
+	<!-- End Reviews Form -->
+	<!-- Display Reviews -->
+	<div class="reviews" id="display-reviews-container">
+		<div class="w3l-visitors-agile">
+			<div class="container">
+				<h3 class="title-w3-agileits title-black-wthree">Customer Reviews</h3>
+				<div class="text-center">
+					<?php
+						// Fetch reviews from the database
+						$fetchQuery = "SELECT * FROM reviews";
+						$result = mysqli_query($con, $fetchQuery);
+
+						if (mysqli_num_rows($result) > 0) {
+							$reviews = mysqli_fetch_all($result, MYSQLI_ASSOC);
+							$totalReviews = count($reviews);
+
+							// Check if 'page' parameter is set in the URL
+							$currentPage = isset($_GET['page']) ? $_GET['page'] : 1;
+
+							// Calculate the index of the current review
+							$startIndex = ($currentPage - 1) * 1;
+							$endIndex = min($startIndex + 1, $totalReviews - 1);
+
+							// Display the reviews for the current page
+							for ($i = $startIndex; $i <= $endIndex; $i++) {
+								echo '<div class="review-item">';
+								echo '<p><strong>Username:</strong> ' . $reviews[$i]['username'] . '</p>';
+								echo '<p><strong>Rating:</strong> ' . $reviews[$i]['rating'] . '</p>';
+								echo '<p><strong>Comment:</strong> ' . $reviews[$i]['comment'] . '</p>';
+								echo '</div>';
+							}
+
+							// Display previous and next buttons
+							echo '<div class="text-center">';
+							if ($currentPage > 1) {
+								$prevPage = $currentPage - 1;
+								echo '<a href="?page=' . $prevPage . '" class="btn btn-primary" onclick="scrollToReviews()">Previous</a>';
+							}
+
+							if ($endIndex < $totalReviews - 1) {
+								$nextPage = $currentPage + 1;
+								echo '<a href="?page=' . $nextPage . '" class="btn btn-primary" onclick="scrollToReviews()">Next</a>';
+							}
+							echo '</div>';
+						} else {
+							echo '<p>No reviews yet.</p>';
+						}
+					?>
+				</div>
+				
+
+			</div>
+		</div>
+	</div>
+	<!-- End Display Reviews -->
 </section>	
 <script>
 function scrollToReviews() {
@@ -434,6 +512,8 @@ function scrollToReviews() {
     reviewsContainer.scrollIntoView({ behavior: 'smooth' });
 }
 </script>
+
+
 
 <!-- contact -->
 <section class="contact-w3ls" id="contact">
