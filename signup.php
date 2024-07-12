@@ -19,6 +19,19 @@
         }
         .form-heading {
             text-align: center;
+            position: relative;
+        }
+        .form-heading::after {
+            content: '';
+            display: block;
+            width: 50px;
+            height: 3px;
+            background-color: blue;
+            margin: 10px auto 0;
+        }
+        .carousel-item img {
+            max-height: 200px;
+            object-fit: cover;
         }
     </style>
 </head>
@@ -26,9 +39,69 @@
     <div class="container container-custom">
         <div class="row justify-content-center">
             <div class="col-md-5 image-stack">
-            <img src="images/Sign1.jpg" alt="Image 1">
-            <img src="images/Sign2.jpg" alt="Image 2">
-            <img src="images/Sign0.jpg" alt="Image 3">
+                <div id="carousel1" class="carousel slide" data-ride="carousel">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <img src="images/Sign1.jpg" alt="Image 1">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="images/Sign2.jpg" alt="Image 2">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="images/Sign3.jpg" alt="Image 3">
+                        </div>
+                    </div>
+                    <a class="carousel-control-prev" href="#carousel1" role="button" data-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Previous</span>
+                    </a>
+                    <a class="carousel-control-next" href="#carousel1" role="button" data-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Next</span>
+                    </a>
+                </div>
+                <div id="carousel2" class="carousel slide mt-3" data-ride="carousel">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <img src="images/Sign4.jpg" alt="Image 4">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="images/Sign5.jpg" alt="Image 5">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="images/Sign6.jpg" alt="Image 6">
+                        </div>
+                    </div>
+                    <a class="carousel-control-prev" href="#carousel2" role="button" data-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Previous</span>
+                    </a>
+                    <a class="carousel-control-next" href="#carousel2" role="button" data-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Next</span>
+                    </a>
+                </div>
+                <div id="carousel3" class="carousel slide mt-3" data-ride="carousel">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <img src="images/Sign7.jpg" alt="Image 7">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="images/Sign8.jpg" alt="Image 8">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="images/Sign0.jpg" alt="Image 9">
+                        </div>
+                    </div>
+                    <a class="carousel-control-prev" href="#carousel3" role="button" data-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Previous</span>
+                    </a>
+                    <a class="carousel-control-next" href="#carousel3" role="button" data-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Next</span>
+                    </a>
+                </div>
             </div>
             <div class="col-md-5 form-container">
                 <h2 class="form-heading">Sign Up</h2>
