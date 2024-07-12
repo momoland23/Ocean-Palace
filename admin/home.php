@@ -32,7 +32,6 @@ if(!isset($_SESSION["user"]))
                     <span class="sr-only">Toggle navigation</span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
                 </button>
                 <a class="navbar-brand" href="home.php"> <?php echo $_SESSION["user"]; ?> </a>
             </div>
@@ -104,22 +103,16 @@ if(!isset($_SESSION["user"]))
 						$c =0;
 						while($row=mysqli_fetch_array($re) )
 						{
+                            // Debugging output
+                            // var_dump($row);
 								$new = $row['stat'];
 								$cin = $row['cin'];
 								$id = $row['id'];
 								if($new=="Not Confirm")
 								{
 									$c = $c + 1;
-									
-								
 								}
-						
 						}
-						
-									
-									
-
-						
 				?>
 
 					<div class="row">
@@ -170,7 +163,7 @@ if(!isset($_SESSION["user"]))
 									$tre = mysqli_query($con,$tsql);
 									while($trow=mysqli_fetch_array($tre) )
 									{	
-										$co =$trow['stat']; 
+										$co = $trow['stat']; 
 										if($co=="Not Confirm")
 										{
 											echo"<tr>
@@ -187,7 +180,6 @@ if(!isset($_SESSION["user"]))
 												<th><a href='roombook.php?rid=".$trow['id']." ' class='btn btn-primary'>Action</a></th>
 												</tr>";
 										}	
-									
 									}
 									?>
                                         
@@ -206,7 +198,6 @@ if(!isset($_SESSION["user"]))
 								$rsql = "SELECT * FROM `roombook`";
 								$rre = mysqli_query($con,$rsql);
 
-
 								$r =0;
 								while($row=mysqli_fetch_array($rre) )
 								{		
@@ -214,10 +205,8 @@ if(!isset($_SESSION["user"]))
 										if($br=="Confirm")
 										{
 											$r = $r + 1;
-
 										}							
 								}
-						
 								?>
                                 <div class="panel panel-info">
                                     <div class="panel-heading">
@@ -226,7 +215,6 @@ if(!isset($_SESSION["user"]))
 											<button class="btn btn-primary" type="button">
 												 Booked Rooms  <span class="badge"><?php echo $r ; ?></span>
 											</button>
-											
 											</a>
                                         </h4>
                                     </div>
@@ -257,14 +245,7 @@ if(!isset($_SESSION["user"]))
 														</div>
 													</div>	
 											</div>";
-															
-												
-					
-				
-												
 											}
-											
-									
 										}
 										?>
                                            
@@ -282,9 +263,7 @@ if(!isset($_SESSION["user"]))
 								while($row=mysqli_fetch_array($fre) )
 								{
 										$f = $f + 1;
-								
 								}
-						
 								?>
                                 <div class="panel panel-danger">
                                     
@@ -311,16 +290,13 @@ if(!isset($_SESSION["user"]))
 									$cre = mysqli_query($con,$csql);
 									while($crow=mysqli_fetch_array($cre) )
 									{	
-										
-											echo"<tr>
-												<th>".$crow['id']."</th>
-												<th>".$crow['fullname']."</th>
-												<th>".$crow['email']." </th>
-												<th>".$crow['cdate']." </th>
-												<th>".$crow['approval']."</th>
-												</tr>";
-										
-									
+										echo"<tr>
+											<th>".$crow['id']."</th>
+											<th>".$crow['fullname']."</th>
+											<th>".$crow['email']."</th>
+											<th>".$crow['cdate']."</th>
+											<th>".$crow['approval']."</th>
+											</tr>";
 									}
 									?>
                                         
@@ -361,7 +337,6 @@ if(!isset($_SESSION["user"]))
     <script src="assets/js/morris/morris.js"></script>
     <!-- Custom Js -->
     <script src="assets/js/custom-scripts.js"></script>
-
 
 </body>
 
