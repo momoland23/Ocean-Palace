@@ -237,9 +237,6 @@ include('db.php');
 						<img src="images/teams1.jpg" alt=" " class="img-responsive" />
 					</li>
 					<li>
-						<img src="images/teams2.jpg" alt=" " class="img-responsive" />
-					</li>
-					<li>
 						<img src="images/teams3.jpg" alt=" " class="img-responsive" />
 					</li>
 					<li>
@@ -263,24 +260,8 @@ include('db.php');
 						</div>
 						<div class="clearfix"> </div>
 					</div>
+					
 					<div class="tab2">
-					<div class="col-md-6 team-img-w3-agile">
-						</div>
-						<div class="col-md-6 team-Info-agileits">
-						<h4>Tahiat Nawar</h4>
-							<span>Technology Officer</span>
-							<p>Tahiat, the Technology Officer at our hotel booking site, is a dedicated member in our site. With a passion for optimizing user experiences, she ensures seamless technology integration and robust system performance. </p>	
-						<div class="social-bnr-agileits footer-icons-agileinfo">
-							<ul class="social-icons3">
-							<li><a href="https://www.facebook.com/" class="fa fa-facebook icon-border facebook"> </a></li>
-								<li><a href="https://twitter.com/" class="fa fa-twitter icon-border twitter"> </a></li>
-				
-							</ul>
-						</div>							
-						</div>
-						<div class="clearfix"> </div>
-					</div>
-					<div class="tab3">
 						<div class="col-md-6 team-img-w3-agile">
 						</div>
 						<div class="col-md-6 team-Info-agileits">
@@ -298,14 +279,14 @@ include('db.php');
 						</div>
 						<div class="clearfix"> </div>
 					</div>
-					<div class="tab4">
+					<div class="tab3">
 					<div class="col-md-6 team-img-w3-agile">
 						</div>
 						<div class="col-md-6 team-Info-agileits">
 						<h4>Tasnia Momo</h4>
-							<span>Customer Support Officer</span>
-							<p>Tasnia, our dedicated Customer Support Officer at the hotel booking site, excels in providing exceptional assistance to users. With a friendly communication skills, she ensures guests have a seamless experience. Her commitment to customer satisfaction is a valuable asset to our team.</p>
-						<div class="social-bnr-agileits footer-icons-agileinfo">
+							<h4>Tasnia Momo</h4>
+						<span>Technology Officer</span>
+						<p>Tasnia, the Technology Officer at our hotel booking site, is a dedicated member in our site. With a passion for optimizing user experiences, she ensures seamless technology integration and robust system performance. </p>						<div class="social-bnr-agileits footer-icons-agileinfo">
 							<ul class="social-icons3">
 							<li><a href="https://www.facebook.com/" class="fa fa-facebook icon-border facebook"> </a></li>
 							<li><a href="https://twitter.com/" class="fa fa-twitter icon-border twitter"> </a></li>
