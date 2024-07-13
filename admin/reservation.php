@@ -1,6 +1,16 @@
 <?php
-session_start();
-include('db.php');
+session_start(); // Start the session
+
+// Check if the user session is set
+if (!isset($_SESSION['user'])) {
+    die("User session not set. Please log in.");
+}
+
+// Retrieve user details from session
+$firstname = $_SESSION['user']['firstname'] ?? 'N/A';
+$lastname = $_SESSION['user']['lastname'] ?? 'N/A';
+$email = $_SESSION['user']['email'] ?? 'N/A';
+$contact = $_SESSION['user']['contact'] ?? 'N/A';
 ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -46,41 +56,22 @@ include('db.php');
                                 PERSONAL INFORMATION
                             </div>
                             <div class="panel-body">
-                                <?php
-                                $userId = 1; // Replace with the actual user ID or fetch dynamically
-                                $con = mysqli_connect("localhost", "root", "", "hotel");
-                                $query = "SELECT firstname, lastname, email, contact FROM users WHERE id = $userId";
-                                $result = mysqli_query($con, $query);
-
-                                if ($result) {
-                                    $row = mysqli_fetch_assoc($result);
-                                    $fname = $row['firstname'];
-                                    $lname = $row['lastname'];
-                                    $email = $row['email'];
-                                    $phone = $row['contact'];
-                                } else {
-                                    $fname = "";
-                                    $lname = "";
-                                    $email = "";
-                                    $phone = "";
-                                }
-                                ?>
-                                <form name="form" method="post" action="reservation.php">
+                               <form name="form" method="post" action="reservation.php">
                                     <div class="form-group">
                                         <label>First Name</label>
-                                        <input name="fname" class="form-control" value="<?php echo $fname; ?>" required>
+                                        <input name="fname" class="form-control" value="<?php echo htmlspecialchars($firstname); ?>" required>
                                     </div>
                                     <div class="form-group">
                                         <label>Last Name</label>
-                                        <input name="lname" class="form-control" value="<?php echo $lname; ?>" required>
+                                        <input name="lname" class="form-control" value="<?php echo htmlspecialchars($lastname); ?>" required>
                                     </div>
                                     <div class="form-group">
                                         <label>Email</label>
-                                        <input name="email" type="email" class="form-control" value="<?php echo $email; ?>" required>
+                                        <input name="email" type="email" class="form-control" value="<?php echo htmlspecialchars($email); ?>" required>
                                     </div>
                                     <div class="form-group">
                                         <label>Phone Number</label>
-                                        <input name="phone" type="text" class="form-control" value="<?php echo $phone; ?>" required>
+                                        <input name="phone" type="text" class="form-control" value="<?php echo htmlspecialchars($contact); ?>" required>
                                     </div>
                                     
                                 </form>
@@ -186,7 +177,7 @@ include('db.php');
                                         $new = "Not Confirm";
                                         $nodays = floor(($checkOutDate - $checkInDate) / (60 * 60 * 24));
 
-                                        $newUser = "INSERT INTO `roombook`(`FName`, `LName`, `Email`, `Phone`, `TRoom`, `Bed`, `NRoom`, `Meal`, `cin`, `cout`, `stat`, `nodays`) VALUES ('$_POST[fname]','$_POST[lname]','$_POST[email]','$_POST[phone]','$_POST[troom]','$_POST[bed]','$_POST[nroom]','$_POST[meal]','$_POST[cin]','$_POST[cout]','$new','$nodays')";
+                                        $newUser = "INSERT INTO roombook`(FName`, LName, Email, Phone, TRoom, Bed, NRoom, Meal, cin, cout, stat, nodays) VALUES ('$_POST[fname]','$_POST[lname]','$_POST[email]','$_POST[phone]','$_POST[troom]','$_POST[bed]','$_POST[nroom]','$_POST[meal]','$_POST[cin]','$_POST[cout]','$new','$nodays')";
 
                                         if (mysqli_query($con, $newUser)) {
                                             echo "<script type='text/javascript'> alert('Your Booking application has been sent'); </script>";
@@ -199,14 +190,13 @@ include('db.php');
                             ?>
 
 
-    
+    <!-- jQuery Js -->
     <script src="assets/js/jquery-1.10.2.js"></script>
-    
+    <!-- Bootstrap Js -->
     <script src="assets/js/bootstrap.min.js"></script>
-  
+    <!-- Metis Menu Js -->
     <script src="assets/js/jquery.metisMenu.js"></script>
-   
+    <!-- Custom Js -->
     <script src="assets/js/custom-scripts.js"></script>
 </body>
 </html>
-
