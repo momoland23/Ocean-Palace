@@ -190,7 +190,7 @@ $contact = $_SESSION['user']['contact'] ?? 'N/A';
                             ?>
 
 
-    <!-- jQuery Js -->
+  
     <script src="assets/js/jquery-1.10.2.js"></script>
     <!-- Bootstrap Js -->
     <script src="assets/js/bootstrap.min.js"></script>
