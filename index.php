@@ -70,7 +70,7 @@ include('db.php');
 							<li class="menu__item"><a href="#rooms" class="menu__link scroll">Rooms</a></li>
 							<li class="menu__item"><a href="#reviews" class="menu__link scroll">Reviews</a></li>
 							<li class="menu__item"><a href="#contact" class="menu__link scroll">Contact Us</a></li>
-							<li class="menu__item"><a href="admin">Admin</a></li>
+							
 
 						</ul>
 					</nav>
