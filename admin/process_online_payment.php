@@ -19,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Process the payment (this is a placeholder, you should implement actual payment processing)
         // ...
 
-        // Redirect to a confirmation page
+        
         echo "<script type='text/javascript'> alert('Payment successful'); window.location.href='confirmation.php'; </script>";
     }
 } else {
