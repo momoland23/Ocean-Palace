@@ -11,7 +11,61 @@ $firstname = $_SESSION['user']['firstname'] ?? 'N/A';
 $lastname = $_SESSION['user']['lastname'] ?? 'N/A';
 $email = $_SESSION['user']['email'] ?? 'N/A';
 $contact = $_SESSION['user']['contact'] ?? 'N/A';
+
+include('db.php');
+
+if (isset($_POST['submit'])) {
+    $con = mysqli_connect("localhost", "root", "", "hotel");
+
+    // Validate check-in and check-out dates
+    if (isset($_POST['cin']) && isset($_POST['cout'])) {
+        $checkInDate = strtotime($_POST['cin']);
+        $checkOutDate = strtotime($_POST['cout']);
+        $currentDate = strtotime(date('Y-m-d'));
+
+        if ($checkInDate < $currentDate || $checkOutDate < $currentDate || $checkOutDate <= $checkInDate) {
+            echo "<script type='text/javascript'> alert('Invalid check-in or check-out dates'); </script>";
+        } else {
+            // Check if the room is available
+            $roomAvailabilityCheck = "SELECT * FROM roombook WHERE TRoom = '$_POST[troom]' AND Bed = '$_POST[bed]' AND NRoom > 0 AND ((STR_TO_DATE('$_POST[cin]', '%Y-%m-%d') BETWEEN cin AND cout) OR (STR_TO_DATE('$_POST[cout]', '%Y-%m-%d') BETWEEN cin AND cout))";
+            $roomAvailabilityResult = mysqli_query($con, $roomAvailabilityCheck);
+            $roomAvailabilityData = mysqli_fetch_array($roomAvailabilityResult, MYSQLI_NUM);
+
+            if ($roomAvailabilityData !== null && $roomAvailabilityData[0] > 0) {
+                echo "<script type='text/javascript'> alert('Selected room with the same bed type is not available for the specified dates'); </script>";
+            } else {
+                $new = "Not Confirm";
+                $nodays = floor(($checkOutDate - $checkInDate) / (60 * 60 * 24));
+
+                // Check if form data is set before using it
+                $fname = isset($_POST['fname']) ? $_POST['fname'] : '';
+                $lname = isset($_POST['lname']) ? $_POST['lname'] : '';
+                $email = isset($_POST['email']) ? $_POST['email'] : '';
+                $phone = isset($_POST['phone']) ? $_POST['phone'] : '';
+                $troom = isset($_POST['troom']) ? $_POST['troom'] : '';
+                $bed = isset($_POST['bed']) ? $_POST['bed'] : '';
+                $nroom = isset($_POST['nroom']) ? $_POST['nroom'] : '';
+                $meal = isset($_POST['meal']) ? $_POST['meal'] : '';
+                $cin = isset($_POST['cin']) ? $_POST['cin'] : '';
+                $cout = isset($_POST['cout']) ? $_POST['cout'] : '';
+
+                $newUser = "INSERT INTO `roombook`(`FName`, `LName`, `Email`, `Phone`, `TRoom`, `Bed`, `NRoom`, `Meal`, `cin`, `cout`, `stat`, `nodays`) VALUES ('$fname','$lname','$email','$phone','$troom','$bed','$nroom','$meal','$cin','$cout','$new','$nodays')";
+
+                if (mysqli_query($con, $newUser)) {
+                    echo "<script type='text/javascript'> alert('Your Booking application has been sent'); </script>";
+                    header("Location: transaction.php");
+                    exit();
+                } else {
+                    echo "<script type='text/javascript'> alert('Error adding user to the database'); </script>";
+                }
+            }
+        }
+    } else {
+        echo "<script type='text/javascript'> alert('Please enter check-in and check-out dates'); </script>";
+    }
+}
 ?>
+
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -152,59 +206,14 @@ $contact = $_SESSION['user']['contact'] ?? 'N/A';
                               
                             </form>
                             <?php
-                            
-                            include('db.php');
-
-                            if (isset($_POST['submit'])) {
-                                $con = mysqli_connect("localhost", "root", "", "hotel");
-
-                                // Validate check-in and check-out dates
-                                if (isset($_POST['cin']) && isset($_POST['cout'])) {
-                                    $checkInDate = strtotime($_POST['cin']);
-                                    $checkOutDate = strtotime($_POST['cout']);
-                                    $currentDate = strtotime(date('Y-m-d'));
-
-                                    if ($checkInDate < $currentDate || $checkOutDate < $currentDate || $checkOutDate <= $checkInDate) {
-                                        echo "<script type='text/javascript'> alert('Invalid check-in or check-out dates'); </script>";
-                                    } else {
-                                        // Check if the room is available
-                                        $roomAvailabilityCheck = "SELECT * FROM roombook WHERE TRoom = '$_POST[troom]' AND Bed = '$_POST[bed]' AND NRoom > 0 AND ((STR_TO_DATE('$_POST[cin]', '%Y-%m-%d') BETWEEN cin AND cout) OR (STR_TO_DATE('$_POST[cout]', '%Y-%m-%d') BETWEEN cin AND cout))";
-                                        $roomAvailabilityResult = mysqli_query($con, $roomAvailabilityCheck);
-                                        $roomAvailabilityData = mysqli_fetch_array($roomAvailabilityResult, MYSQLI_NUM);
-
-                                        if ($roomAvailabilityData !== null && $roomAvailabilityData[0] > 0) {
-                                            echo "<script type='text/javascript'> alert('Selected room with the same bed type is not available for the specified dates'); </script>";
-                                        } else {
-                                            $new = "Not Confirm";
-                                            $nodays = floor(($checkOutDate - $checkInDate) / (60 * 60 * 24));
-
-                                            // Check if form data is set before using it
-                                            $fname = isset($_POST['fname']) ? $_POST['fname'] : '';
-                                            $lname = isset($_POST['lname']) ? $_POST['lname'] : '';
-                                            $email = isset($_POST['email']) ? $_POST['email'] : '';
-                                            $phone = isset($_POST['phone']) ? $_POST['phone'] : '';
-                                            $troom = isset($_POST['troom']) ? $_POST['troom'] : '';
-                                            $bed = isset($_POST['bed']) ? $_POST['bed'] : '';
-                                            $nroom = isset($_POST['nroom']) ? $_POST['nroom'] : '';
-                                            $meal = isset($_POST['meal']) ? $_POST['meal'] : '';
-                                            $cin = isset($_POST['cin']) ? $_POST['cin'] : '';
-                                            $cout = isset($_POST['cout']) ? $_POST['cout'] : '';
-
-                                            $newUser = "INSERT INTO `roombook`(`FName`, `LName`, `Email`, `Phone`, `TRoom`, `Bed`, `NRoom`, `Meal`, `cin`, `cout`, `stat`, `nodays`) VALUES ('$fname','$lname','$email','$phone','$troom','$bed','$nroom','$meal','$cin','$cout','$new','$nodays')";
-
-                                            if (mysqli_query($con, $newUser)) {
-                                                echo "<script type='text/javascript'> alert('Your Booking application has been sent'); </script>";
-                                            } else {
-                                                echo "<script type='text/javascript'> alert('Error adding user to the database'); </script>";
-                                            }
-                                        }
-                                    }
-                                } else {
-                                    echo "<script type='text/javascript'> alert('Please enter check-in and check-out dates'); </script>";
-                                }
-                            }
+                            // Include the closing tag for the human verification form
                             ?>
-
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- jQuery Js -->
     <script src="assets/js/jquery-1.10.2.js"></script>
