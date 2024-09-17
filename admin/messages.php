@@ -33,24 +33,33 @@ if (isset($_POST['log'])) {
         <!-- Navigation and other content -->
 
         <!--/. NAV TOP LEFT -->
-        <nav class="navbar-default navbar-side" role="navigation">
-            <div class="sidebar-collapse">
-                <ul class="nav" id="main-menu">
-                    <li>
-                        <a href="home.php"><i class="fa fa-dashboard"></i> Room Booking</a>
-                    </li>
-                    <li>
-                        <a href="messages.php"><i class="fa fa-desktop"></i> Queries</a>
-                    </li>
-                    <li>
-                        <a class="active-menu" href="payment.php"><i class="fa fa-qrcode"></i> Payment</a>
-                    </li>
-                    <li>
-                        <a href="logout.php"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
+<nav class="navbar-default navbar-side" role="navigation">
+    <div class="sidebar-collapse">
+        <ul class="nav" id="main-menu">
+            <li>
+                <a class="<?php if(basename($_SERVER['PHP_SELF']) == 'home.php') { echo 'active-menu'; } ?>" href="home.php">
+                    <i class="fa fa-dashboard"></i> Room Booking
+                </a>
+            </li>
+            <li>
+                <a class="<?php if(basename($_SERVER['PHP_SELF']) == 'messages.php') { echo 'active-menu'; } ?>" href="messages.php">
+                    <i class="fa fa-desktop"></i> Queries
+                </a>
+            </li>
+            <li>
+                <a class="<?php if(basename($_SERVER['PHP_SELF']) == 'payment.php') { echo 'active-menu'; } ?>" href="payment.php">
+                    <i class="fa fa-qrcode"></i> Payment
+                </a>
+            </li>
+            <li>
+                <a class="<?php if(basename($_SERVER['PHP_SELF']) == 'logout.php') { echo 'active-menu'; } ?>" href="logout.php">
+                    <i class="fa fa-sign-out fa-fw"></i> Logout
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
 
         <div id="page-wrapper">
             <div id="page-inner">
@@ -112,8 +121,7 @@ if (isset($_POST['log'])) {
                                                     <th>Email</th>
                                                     <th>Message</th>
                                                     <th>Date</th>
-                                                    <th>Status</th>
-                                                    <th>Approval</th>
+                                                 
                                                 </tr>
                                             </thead>
                                             <tbody>

@@ -70,7 +70,7 @@ include('db.php');
 							<li class="menu__item"><a href="#rooms" class="menu__link scroll">Rooms</a></li>
 							<li class="menu__item"><a href="#reviews" class="menu__link scroll">Reviews</a></li>
 							<li class="menu__item"><a href="#contact" class="menu__link scroll">Contact Us</a></li>
-							
+							<<!--<li class="menu__item"><a href="admin">Admin</a></li>-->
 
 						</ul>
 					</nav>
@@ -261,7 +261,7 @@ include('db.php');
 						<div class="clearfix"> </div>
 					</div>
 					
-					<div class="tab2">
+					<div class="tab3">
 						<div class="col-md-6 team-img-w3-agile">
 						</div>
 						<div class="col-md-6 team-Info-agileits">
@@ -279,14 +279,14 @@ include('db.php');
 						</div>
 						<div class="clearfix"> </div>
 					</div>
-					<div class="tab3">
+					<div class="tab4">
 					<div class="col-md-6 team-img-w3-agile">
 						</div>
 						<div class="col-md-6 team-Info-agileits">
 						<h4>Tasnia Momo</h4>
-							<h4>Tasnia Momo</h4>
 						<span>Technology Officer</span>
-						<p>Tasnia, the Technology Officer at our hotel booking site, is a dedicated member in our site. With a passion for optimizing user experiences, she ensures seamless technology integration and robust system performance. </p>						<div class="social-bnr-agileits footer-icons-agileinfo">
+						<p>Tasnia, the Technology Officer at our hotel booking site, is a dedicated member in our site. With a passion for optimizing user experiences, she ensures seamless technology integration and robust system performance. </p>
+						<div class="social-bnr-agileits footer-icons-agileinfo">
 							<ul class="social-icons3">
 							<li><a href="https://www.facebook.com/" class="fa fa-facebook icon-border facebook"> </a></li>
 							<li><a href="https://twitter.com/" class="fa fa-twitter icon-border twitter"> </a></li>
@@ -325,7 +325,8 @@ include('db.php');
 							</div>
 							<div class="price-selet">	
 								<h3><span>Tk</span>3200</h3>						
-								<a href="admin/reservation.php" >Book Now</a>
+								<a href="UserLogin.php">Book Now</a>
+
 							</div>
 						</div>
 					</div>
@@ -348,7 +349,8 @@ include('db.php');
 							</div>
 							<div class="price-selet">
 								<h3><span>Tk</span>2200</h3>
-								<a href="admin/reservation.php" >Book Now</a>
+								<a href="UserLogin.php">Book Now</a>
+
 							</div>
 						</div>
 					</div>
@@ -371,7 +373,8 @@ include('db.php');
 							</div>
 							<div class="price-selet">
 								<h3><span>Tk</span>1800</h3>
-								<a href="admin/reservation.php" >Book Now</a>
+								<a href="UserLogin.php">Book Now</a>
+
 							</div>
 						</div>
 					</div>
@@ -395,7 +398,8 @@ include('db.php');
 							</div>
 							<div class="price-selet">
 								<h3><span>Tk</span> 1500</h3>
-								<a href="admin/reservation.php" >Book Now</a>
+								<a href="UserLogin.php">Book Now</a>
+
 							</div>
 						</div>
 					</div>
@@ -494,8 +498,6 @@ function scrollToReviews() {
 }
 </script>
 
-
-
 <!-- contact -->
 <section class="contact-w3ls" id="contact">
 	<div class="container">
@@ -542,7 +544,7 @@ function scrollToReviews() {
 					$email = $_POST['email'];
 					$message = $_POST['message'];              
 					$approval = "Not Allowed";
-					$sql = "INSERT INTO `contact`(`fullname`, `phoneno`, `email`,`message`,`cdate`,`approval`) VALUES ('$name','$phone','$email','$message',now(),'$approval')" ;
+					$sql = "INSERT INTO `contact`(`fullname`, `phoneno`, `email`,`message`,`cdate`) VALUES ('$name','$phone','$email','$message',now())" ;
 					
 					
 					if(mysqli_query($con,$sql))

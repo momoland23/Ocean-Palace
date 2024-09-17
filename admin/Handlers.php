@@ -1,7 +1,7 @@
 <?php
 // Handlers.php
 
-include('Interfaces.php'); // Include the interfaces
+include('Interfaces.php');
 
 class QueryHandler implements QueryHandlerInterface {
     private $con;
@@ -24,8 +24,6 @@ class QueryHandler implements QueryHandlerInterface {
                     <td>{$row['email']}</td>
                     <td>{$row['message']}</td>
                     <td>{$row['cdate']}</td>
-                    <td>{$row['approval']}</td>
-                    <td><a href='newsletterdel.php?eid={$row['id']}'><button class='btn btn-danger'>Delete</button></a></td>
                   </tr>";
         }
     }

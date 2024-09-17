@@ -1,93 +1,163 @@
 <?php
-session_start(); // Start the session
-
-// Check if the user session is set
-if (!isset($_SESSION['user'])) {
-    die("User session not set. Please log in.");
-}
-
-// Retrieve user details from session
-$firstname = $_SESSION['user']['firstname'] ?? 'N/A';
-$lastname = $_SESSION['user']['lastname'] ?? 'N/A';
-$email = $_SESSION['user']['email'] ?? 'N/A';
-$contact = $_SESSION['user']['contact'] ?? 'N/A';
-
+// Include database connection
 include('db.php');
 
-if (isset($_POST['submit'])) {
-    $con = mysqli_connect("localhost", "root", "", "hotel");
+// Session Management Class
+class SessionManager {
+    public static function startSession() {
+        session_start();
+    }
 
-    // Validate check-in and check-out dates
-    if (isset($_POST['cin']) && isset($_POST['cout'])) {
-        $checkInDate = strtotime($_POST['cin']);
-        $checkOutDate = strtotime($_POST['cout']);
+    public static function checkUserSession() {
+        if (!isset($_SESSION['user'])) {
+            die("User session not set. Please log in.");
+        }
+    }
+
+    public static function getUserDetails() {
+        return [
+            'firstname' => $_SESSION['user']['firstname'] ?? 'N/A',
+            'lastname' => $_SESSION['user']['lastname'] ?? 'N/A',
+            'email' => $_SESSION['user']['email'] ?? 'N/A',
+            'contact' => $_SESSION['user']['contact'] ?? 'N/A',
+        ];
+    }
+}
+
+// Human Verification Class
+class HumanVerification {
+    public static function generateCode() {
+        return rand();
+    }
+
+    public static function validate($inputCode, $sessionCode) {
+        if (empty($inputCode)) {
+            throw new Exception('Human verification is required.');
+        }
+
+        if ($inputCode !== $sessionCode) {
+            throw new Exception('Human verification code does not match. Please try again.');
+        }
+    }
+}
+
+// Date Validation Class
+class DateValidator {
+    public static function validateCheckInOutDates($checkIn, $checkOut) {
+        $checkInDate = strtotime($checkIn);
+        $checkOutDate = strtotime($checkOut);
         $currentDate = strtotime(date('Y-m-d'));
 
         if ($checkInDate < $currentDate || $checkOutDate < $currentDate || $checkOutDate <= $checkInDate) {
-            echo "<script type='text/javascript'> alert('Invalid check-in or check-out dates'); </script>";
-        } else {
-            // Check if the room is available
-            $roomAvailabilityCheck = "SELECT * FROM roombook WHERE TRoom = '$_POST[troom]' AND Bed = '$_POST[bed]' AND NRoom > 0 AND ((STR_TO_DATE('$_POST[cin]', '%Y-%m-%d') BETWEEN cin AND cout) OR (STR_TO_DATE('$_POST[cout]', '%Y-%m-%d') BETWEEN cin AND cout))";
-            $roomAvailabilityResult = mysqli_query($con, $roomAvailabilityCheck);
-            $roomAvailabilityData = mysqli_fetch_array($roomAvailabilityResult, MYSQLI_NUM);
-
-            if ($roomAvailabilityData !== null && $roomAvailabilityData[0] > 0) {
-                echo "<script type='text/javascript'> alert('Selected room with the same bed type is not available for the specified dates'); </script>";
-            } else {
-                $new = "Not Confirm";
-                $nodays = floor(($checkOutDate - $checkInDate) / (60 * 60 * 24));
-
-                // Check if form data is set before using it
-                $fname = isset($_POST['fname']) ? $_POST['fname'] : '';
-                $lname = isset($_POST['lname']) ? $_POST['lname'] : '';
-                $email = isset($_POST['email']) ? $_POST['email'] : '';
-                $phone = isset($_POST['phone']) ? $_POST['phone'] : '';
-                $troom = isset($_POST['troom']) ? $_POST['troom'] : '';
-                $bed = isset($_POST['bed']) ? $_POST['bed'] : '';
-                $nroom = isset($_POST['nroom']) ? $_POST['nroom'] : '';
-                $meal = isset($_POST['meal']) ? $_POST['meal'] : '';
-                $cin = isset($_POST['cin']) ? $_POST['cin'] : '';
-                $cout = isset($_POST['cout']) ? $_POST['cout'] : '';
-
-                $newUser = "INSERT INTO `roombook`(`FName`, `LName`, `Email`, `Phone`, `TRoom`, `Bed`, `NRoom`, `Meal`, `cin`, `cout`, `stat`, `nodays`) VALUES ('$fname','$lname','$email','$phone','$troom','$bed','$nroom','$meal','$cin','$cout','$new','$nodays')";
-
-                if (mysqli_query($con, $newUser)) {
-                    echo "<script type='text/javascript'> alert('Your Booking application has been sent'); </script>";
-                    header("Location: transaction.php");
-                    exit();
-                } else {
-                    echo "<script type='text/javascript'> alert('Error adding user to the database'); </script>";
-                }
-            }
+            throw new Exception('Invalid check-in or check-out dates.');
         }
-    } else {
-        echo "<script type='text/javascript'> alert('Please enter check-in and check-out dates'); </script>";
+
+        return [$checkInDate, $checkOutDate];
+    }
+}
+
+// Room Availability Class
+class RoomAvailability {
+    private $con;
+
+    public function __construct($con) {
+        $this->con = $con;
+    }
+
+    public function checkRoomAvailability($roomType, $bedType, $checkIn, $checkOut) {
+        $query = "SELECT * FROM roombook WHERE TRoom = '$roomType' AND Bed = '$bedType' 
+                  AND NRoom > 0 AND ((STR_TO_DATE('$checkIn', '%Y-%m-%d') BETWEEN cin AND cout) 
+                  OR (STR_TO_DATE('$checkOut', '%Y-%m-%d') BETWEEN cin AND cout))";
+
+        $result = mysqli_query($this->con, $query);
+        $data = mysqli_fetch_array($result, MYSQLI_NUM);
+
+        if ($data !== null && $data[0] > 0) {
+            throw new Exception('Selected room with the same bed type is not available for the specified dates.');
+        }
+    }
+}
+
+// Room Booking Class
+class RoomBooking {
+    private $con;
+
+    public function __construct($con) {
+        $this->con = $con;
+    }
+
+    public function bookRoom($userDetails, $roomDetails, $checkIn, $checkOut) {
+        $days = floor((strtotime($checkOut) - strtotime($checkIn)) / (60 * 60 * 24));
+        $status = "Not Confirm";
+
+        $query = "INSERT INTO roombook (FName, LName, Email, Phone, TRoom, Bed, NRoom, Meal, cin, cout, stat, nodays) 
+                  VALUES ('{$userDetails['firstname']}', '{$userDetails['lastname']}', '{$userDetails['email']}', 
+                          '{$userDetails['contact']}', '{$roomDetails['troom']}', '{$roomDetails['bed']}', 
+                          '{$roomDetails['nroom']}', '{$roomDetails['meal']}', '$checkIn', '$checkOut', '$status', '$days')";
+
+        if (!mysqli_query($this->con, $query)) {
+            throw new Exception('Error adding user to the database.');
+        }
+    }
+}
+
+// Main Logic
+SessionManager::startSession();
+SessionManager::checkUserSession();
+$userDetails = SessionManager::getUserDetails();
+
+$con = mysqli_connect("localhost", "root", "", "hotel");
+
+if (isset($_POST['submit'])) {
+    try {
+        // Human verification
+        HumanVerification::validate($_POST['code1'], $_POST['code']);
+        
+        // Date validation
+        list($checkInDate, $checkOutDate) = DateValidator::validateCheckInOutDates($_POST['cin'], $_POST['cout']);
+
+        // Room availability check
+        $roomAvailability = new RoomAvailability($con);
+        $roomAvailability->checkRoomAvailability($_POST['troom'], $_POST['bed'], $_POST['cin'], $_POST['cout']);
+
+        // Room booking
+        $roomDetails = [
+            'troom' => $_POST['troom'],
+            'bed' => $_POST['bed'],
+            'nroom' => $_POST['nroom'],
+            'meal' => $_POST['meal']
+        ];
+
+        $roomBooking = new RoomBooking($con);
+        $roomBooking->bookRoom($userDetails, $roomDetails, $_POST['cin'], $_POST['cout']);
+
+        echo "<script>alert('Your Booking application has been sent');</script>";
+        header("Location: transaction.php");
+        exit();
+    } catch (Exception $e) {
+        echo "<script>alert('{$e->getMessage()}');</script>";
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>RESERVATION OCEAN PALACE</title>
-    <!-- Bootstrap Styles-->
+    <!-- Styles -->
     <link href="assets/css/bootstrap.css" rel="stylesheet" />
-    <!-- FontAwesome Styles-->
     <link href="assets/css/font-awesome.css" rel="stylesheet" />
-    <!-- Custom Styles-->
     <link href="assets/css/custom-styles.css" rel="stylesheet" />
-    <!-- Google Fonts-->
     <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
 </head>
 <body>
     <div id="wrapper">
-        <nav class="navbar-default navbar-side" role="navigation">
+        <nav class="navbar-default navbar-side">
             <div class="sidebar-collapse">
                 <ul class="nav" id="main-menu">
                     <li>
-                        <a href="../index.php"><i class="fa fa-home"></i> Homepage</a>
+                        <a href="../index.php"><i class="fa fa-home"></i> Logout</a>
                     </li>
                 </ul>
             </div>
@@ -97,53 +167,39 @@ if (isset($_POST['submit'])) {
             <div id="page-inner">
                 <div class="row">
                     <div class="col-md-12">
-                        <h1 class="page-header">
-                            RESERVATION <small></small>
-                        </h1>
+                        <h1 class="page-header">RESERVATION</h1>
                     </div>
                 </div>
 
                 <div class="row">
-                    <div class="col-md-5 col-sm-5">
+                    <div class="col-md-10 col-sm-10">
                         <div class="panel panel-primary">
-                            <div class="panel-heading">
-                                PERSONAL INFORMATION
-                            </div>
+                            <div class="panel-heading">RESERVATION INFORMATION</div>
                             <div class="panel-body">
-                               <form name="form" method="post" action="reservation.php">
+                                <form method="post" action="reservation.php">
+                                    <!-- Personal Info -->
                                     <div class="form-group">
                                         <label>First Name</label>
-                                        <input name="fname" class="form-control" value="<?php echo htmlspecialchars($firstname); ?>" required>
+                                        <input name="fname" class="form-control" value="<?php echo htmlspecialchars($userDetails['firstname']); ?>" required>
                                     </div>
                                     <div class="form-group">
                                         <label>Last Name</label>
-                                        <input name="lname" class="form-control" value="<?php echo htmlspecialchars($lastname); ?>" required>
+                                        <input name="lname" class="form-control" value="<?php echo htmlspecialchars($userDetails['lastname']); ?>" required>
                                     </div>
                                     <div class="form-group">
                                         <label>Email</label>
-                                        <input name="email" type="email" class="form-control" value="<?php echo htmlspecialchars($email); ?>" required>
+                                        <input name="email" type="email" class="form-control" value="<?php echo htmlspecialchars($userDetails['email']); ?>" required>
                                     </div>
                                     <div class="form-group">
                                         <label>Phone Number</label>
-                                        <input name="phone" type="text" class="form-control" value="<?php echo htmlspecialchars($contact); ?>" required>
+                                        <input name="phone" type="text" class="form-control" value="<?php echo htmlspecialchars($userDetails['contact']); ?>" required>
                                     </div>
-                                    
-                                </form>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="col-md-5 col-sm-5">
-                        <div class="panel panel-primary">
-                            <div class="panel-heading">
-                                RESERVATION INFORMATION
-                            </div>
-                            <div class="panel-body">
-                                <form name="form" method="post" action="reservation.php">
+                                    <!-- Reservation Info -->
                                     <div class="form-group">
                                         <label>Type Of Rooms</label>
                                         <select name="troom" class="form-control" required>
-                                            <option value="" selected></option>
+                                            <option value=""></option>
                                             <option value="Single Room">SINGLE ROOM</option>
                                             <option value="Superior Room">SUPERIOR ROOM</option>
                                             <option value="Deluxe Room">DELUXE ROOM</option>
@@ -153,7 +209,7 @@ if (isset($_POST['submit'])) {
                                     <div class="form-group">
                                         <label>Bedding Type</label>
                                         <select name="bed" class="form-control" required>
-                                            <option value="" selected></option>
+                                            <option value=""></option>
                                             <option value="Single">Single</option>
                                             <option value="Double">Double</option>
                                             <option value="Triple">Triple</option>
@@ -163,7 +219,7 @@ if (isset($_POST['submit'])) {
                                     <div class="form-group">
                                         <label>No. of Rooms</label>
                                         <select name="nroom" class="form-control" required>
-                                            <option value="" selected></option>
+                                            <option value=""></option>
                                             <option value="1">1</option>
                                             <option value="2">2</option>
                                         </select>
@@ -171,7 +227,7 @@ if (isset($_POST['submit'])) {
                                     <div class="form-group">
                                         <label>Meal Plan</label>
                                         <select name="meal" class="form-control" required>
-                                            <option value="" selected></option>
+                                            <option value=""></option>
                                             <option value="Room only">Room only</option>
                                             <option value="Breakfast">Breakfast</option>
                                             <option value="Half Board">Half Board</option>
@@ -180,48 +236,39 @@ if (isset($_POST['submit'])) {
                                     </div>
                                     <div class="form-group">
                                         <label>Check-In</label>
-                                        <input name="cin" type="date" class="form-control">
+                                        <input name="cin" type="date" class="form-control" required>
                                     </div>
                                     <div class="form-group">
                                         <label>Check-Out</label>
-                                        <input name="cout" type="date" class="form-control">
+                                        <input name="cout" type="date" class="form-control" required>
                                     </div>
-                                    <div class="form-group text-right">
-                                        <button type="submit" name="submit" class="btn btn-primary">Submit</button>
+
+                                    <!-- Human Verification -->
+                                    <div class="panel panel-primary">
+                                        <div class="panel-heading">HUMAN VERIFICATION</div>
+                                        <div class="panel-body">
+                                            <p>Type Below this code: <strong><?php $Random_code = HumanVerification::generateCode(); echo $Random_code; ?></strong></p>
+                                            <p>Enter the random code</p>
+                                            <input type="text" name="code1" class="form-control" required />
+                                            <input type="hidden" name="code" value="<?php echo $Random_code; ?>" />
+                                        </div>
                                     </div>
+
+                                    <input type="submit" name="submit" class="btn btn-primary" value="Submit">
                                 </form>
                             </div>
                         </div>
                     </div>
-
-                    <div class="col-md-12 col-sm-12">
-                        <div class="well">
-                            <h4>HUMAN VERIFICATION</h4>
-                            <p>Type Below this code <?php $Random_code = rand(); echo $Random_code; ?> </p>
-                            <br />
-                            <p>Enter the random code<br /></p>
-                            <form name="form" method="post" action="reservation.php">
-                                <input type="text" name="code1" title="random code" required />
-                                <input type="hidden" name="code" value="<?php echo $Random_code; ?>" />
-                              
-                            </form>
-                            <?php
-                            // Include the closing tag for the human verification form
-                            ?>
-                        </div>
-                    </div>
                 </div>
+                
+                <!-- jQuery Js -->
+                <script src="assets/js/jquery-1.10.2.js"></script>
+                <!-- Bootstrap Js -->
+                <script src="assets/js/bootstrap.min.js"></script>
+                <!-- Custom Js -->
+                <script src="assets/js/custom-scripts.js"></script>
             </div>
         </div>
     </div>
-
-    <!-- jQuery Js -->
-    <script src="assets/js/jquery-1.10.2.js"></script>
-    <!-- Bootstrap Js -->
-    <script src="assets/js/bootstrap.min.js"></script>
-    <!-- Metis Menu Js -->
-    <script src="assets/js/jquery.metisMenu.js"></script>
-    <!-- Custom Js -->
-    <script src="assets/js/custom-scripts.js"></script>
 </body>
 </html>
